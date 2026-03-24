@@ -147,6 +147,38 @@ void process_stacktrace(QString temp_path)
 }
 #endif
 
+/*
+ * Filter out noisy Qt6/Wayland tooltip warnings that spam stderr.
+ * These are harmless cosmetic issues with Qt6 on Wayland compositors.
+ */
+void message_handler(QtMsgType type, const QMessageLogContext &context,
+	const QString &msg)
+{
+	(void)context;
+
+	if (msg.contains("Failed to create popup") ||
+	    msg.contains("transientParent"))
+		return;
+
+	switch (type) {
+	case QtDebugMsg:
+		fprintf(stderr, "%s\n", qPrintable(msg));
+		break;
+	case QtWarningMsg:
+		fprintf(stderr, "%s\n", qPrintable(msg));
+		break;
+	case QtCriticalMsg:
+		fprintf(stderr, "Critical: %s\n", qPrintable(msg));
+		break;
+	case QtFatalMsg:
+		fprintf(stderr, "Fatal: %s\n", qPrintable(msg));
+		abort();
+	default:
+		fprintf(stderr, "%s\n", qPrintable(msg));
+		break;
+	}
+}
+
 void usage()
 {
 	fprintf(stdout,
@@ -185,6 +217,8 @@ int main(int argc, char *argv[])
 	// Initialize libsigrokflow. Must be called after Gst::init().
 	Srf::init();
 #endif
+
+	qInstallMessageHandler(message_handler);
 
 	Application a(argc, argv);
 
