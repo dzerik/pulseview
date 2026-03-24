@@ -234,7 +234,8 @@ bool DeviceManager::driver_supported(shared_ptr<Driver> driver) const
 	 */
 	const auto keys = driver->config_keys();
 
-	return keys.count(ConfigKey::LOGIC_ANALYZER) | keys.count(ConfigKey::OSCILLOSCOPE);
+	return keys.count(ConfigKey::LOGIC_ANALYZER) | keys.count(ConfigKey::OSCILLOSCOPE) |
+		keys.count(ConfigKey::MULTIMETER);
 }
 
 list< shared_ptr<devices::HardwareDevice> >

@@ -183,7 +183,8 @@ void Connect::populate_drivers()
 		const auto keys = driver->config_keys();
 
 		bool supported_device = keys.count(ConfigKey::LOGIC_ANALYZER) |
-			keys.count(ConfigKey::OSCILLOSCOPE);
+			keys.count(ConfigKey::OSCILLOSCOPE) |
+			keys.count(ConfigKey::MULTIMETER);
 
 		if (supported_device)
 			drivers_.addItem(QString("%1 (%2)").arg(

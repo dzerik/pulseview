@@ -153,15 +153,17 @@ pkg_check_modules(PKGDEPS REQUIRED ${PKGDEPS})
 
 set(CMAKE_AUTOMOC TRUE)
 
-# Check for Qt5, and check for Qt6 if Qt5 is not found.
+# Check for Qt6 first, fall back to Qt5.
 set(QT_COMPONENTS Core Gui LinguistTools Widgets Svg)
-find_package(Qt5 5.3 QUIET COMPONENTS Core)
-if(Qt5_FOUND)
-	find_package(Qt5 5.3 COMPONENTS ${QT_COMPONENTS} REQUIRED)
-	message(STATUS "Qt version: ${Qt5_VERSION}")
-else()
+find_package(Qt6 6.2 QUIET COMPONENTS Core)
+if(Qt6_FOUND)
 	find_package(Qt6 6.2 COMPONENTS ${QT_COMPONENTS} REQUIRED)
 	message(STATUS "Qt version: ${Qt6_VERSION}")
+	# Qt6: SvgWidgets is a separate module (split from Svg)
+	find_package(Qt6 6.2 QUIET COMPONENTS SvgWidgets)
+else()
+	find_package(Qt5 5.3 COMPONENTS ${QT_COMPONENTS} REQUIRED)
+	message(STATUS "Qt version: ${Qt5_VERSION}")
 endif()
 
 if(WIN32)
